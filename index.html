@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=390, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Smart Student Wallets</title>
+    <link href="https://fonts.googleapis.com/css2?family=Calibri:wght@700&family=Roboto&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+        .container {
+            width: 390px;
+            min-height: 844px;
+            background: #FFFFFF;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .screen {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+        .screen.active {
+            display: flex;
+        }
+        h1, h2 {
+            font-family: 'Calibri', 'Arial', sans-serif;
+            font-weight: bold;
+            color: #000000;
+            text-align: center;
+            margin: 0;
+        }
+        p {
+            color: #B0B0B0;
+            font-size: 14px;
+            text-align: center;
+            margin: 16px 0;
+        }
+        .button {
+            width: 220px;
+            height: 48px;
+            background: #FFFFFF;
+            border: 2px solid #B0B0B0;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #000000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 24px 0;
+        }
+        .back-button {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            width: 40px;
+            height: 40px;
+            background: #FFFFFF;
+            border: 2px solid #B0B0B0;
+            border-radius: 50%;
+            font-size: 16px;
+            color: #000000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .link {
+            color: #B0B0B0;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .input {
+            width: 340px;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #B0B0B0;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #000000;
+        }
+        .label {
+            color: #000000;
+            font-size: 14px;
+            margin-top: 16px;
+            align-self: flex-start;
+        }
+        .icon {
+            width: 80px;
+            height: 80px;
+            background: #B0B0B0;
+            margin: 24px 0;
+            border-radius: 8px;
+        }
+        .list-item {
+            width: 100%;
+            padding: 16px;
+            border-bottom: 1px solid #B0B0B0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .list-item span {
+            color: #000000;
+            font-size: 16px;
+        }
+        .list-item small {
+            color: #B0B0B0;
+            font-size: 12px;
+            display: block;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 280px;
+            height: 160px;
+            background: #FFFFFF;
+            border: 1px solid #B0B0B0;
+            border-radius: 8px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal p {
+            color: #000000;
+            font-size: 16px;
+        }
+        .modal .button {
+            width: 120px;
+            height: 40px;
+            margin: 16px 0;
+        }
+        .chart-placeholder {
+            width: 200px;
+            height: 200px;
+            background: #B0B0B0;
+            border-radius: 50%;
+            margin: 24px 0;
+        }
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        .filter-buttons .button {
+            width: 100px;
+            height: 40px;
+            font-size: 14px;
+        }
+        .filter-buttons .button.active {
+            background: #B0B0B0;
+            color: #FFFFFF;
+        }
+        .progress-bar {
+            width: 200px;
+            height: 8px;
+            background: #E0E0E0;
+            border-radius: 4px;
+            margin: 8px 0;
+        }
+        .progress {
+            height: 100%;
+            background: #B0B0B0;
+            border-radius: 4px;
+            width: 50%;
+        }
+        .toggle {
+            width: 40px;
+            height: 20px;
+            background: #B0B0B0;
+            border-radius: 10px;
+            position: relative;
+        }
+        .toggle::after {
+            content: '';
+            width: 18px;
+            height: 18px;
+            background: #FFFFFF;
+            border-radius: 50%;
+            position: absolute;
+            top: 1px;
+            left: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div id="welcome" class="screen active">
+            <h1 style="font-size: 28px; margin-top: 50%;">Smart Student Wallets</h1>
+            <p>Your Campus Companion for Smart Spending</p>
+            <button class="button" onclick="navigate('onboarding1')">Get Started</button>
+        </div>
+
+        <!-- Onboarding Screen 1 -->
+        <div id="onboarding1" class="screen">
+            <button class="back-button" onclick="goBack('welcome')">←</button>
+            <div class="icon" style="margin-top: 100px;"></div>
+            <h2 style="font-size: 20px;">Track Your Expenses</h2>
+            <p>Log every purchase to stay on top of your finances</p>
+            <button class="button" onclick="navigate('onboarding2')">Next</button>
+        </div>
+
+        <!-- Onboarding Screen 2 -->
+        <div id="onboarding2" class="screen">
+            <button class="back-button" onclick="goBack('onboarding1')">←</button>
+            <div class="icon" style="margin-top: 100px;"></div>
+            <h2 style="font-size: 20px;">Visualize Your Spending</h2>
+            <p>See your expenses in easy-to-understand charts</p>
+            <button class="button" onclick="navigate('onboarding3')">Next</button>
+        </div>
+
+        <!-- Onboarding Screen 3 -->
+        <div id="onboarding3" class="screen">
+            <button class="back-button" onclick="goBack('onboarding2')">←</button>
+            <div class="icon" style="margin-top: 100px;"></div>
+            <h2 style="font-size: 20px;">Set Your Budgets</h2>
+            <p>Define spending limits to manage your money wisely</p>
+            <button class="button" onclick="navigate('login')">Finish</button>
+        </div>
+
+        <!-- Login Screen -->
+        <div id="login" class="screen">
+            <button class="back-button" onclick="goBack('onboarding3')">←</button>
+            <h1 style="font-size: 24px; margin-top: 64px;">Smart Student Wallets</h1>
+            <label class="label">Email</label>
+            <input id="login-email" class="input" placeholder="Enter your email">
+            <label class="label">Password</label>
+            <input id="login-password" class="input" type="password" placeholder="Enter your password">
+            <button class="button" onclick="handleLogin()">Login</button>
+            <span class="link" onclick="navigate('register')">Register</span>
+        </div>
+
+        <!-- Register Screen -->
+        <div id="register" class="screen">
+            <button class="back-button" onclick="goBack('login')">←</button>
+            <h1 style="font-size: 24px; margin-top: 64px;">Smart Student Wallets</h1>
+            <label class="label">Email</label>
+            <input id="register-email" class="input" placeholder="Enter your email">
+            <label class="label">Password</label>
+            <input id="register-password" class="input" type="password" placeholder="Enter your password">
+            <label class="label">Confirm Password</label>
+            <input id="register-confirm-password" class="input" type="password" placeholder="Confirm your password">
+            <button class="button" onclick="handleRegister()">Sign Up</button>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="screen">
+            <button class="back-button" onclick="goBack('login')">←</button>
+            <h1 style="font-size: 24px; margin-top: 64px;">Smart Student Wallets</h1>
+            <h2 style="font-size: 32px; margin-top: 24px;">$0.00</h2>
+            <div style="width: 100%; margin-top: 32px;">
+                <div class="list-item" onclick="navigate('add-expense')"><span>Add Expense</span><span>></span></div>
+                <div class="list-item" onclick="navigate('view-expenses')"><span>View Expenses</span><span>></span></div>
+                <div class="list-item" onclick="navigate('charts')"><span>Charts</span><span>></span></div>
+                <div class="list-item" onclick="navigate('budget')"><span>Budget</span><span>></span></div>
+                <div class="list-item" onclick="navigate('transfers')"><span>Transfers</span><span>></span></div>
+                <div class="list-item" onclick="navigate('savings')"><span>Savings</span><span>></span></div>
+                <div class="list-item" onclick="navigate('settings')"><span>Settings</span><span>></span></div>
+            </div>
+            <button class="button" onclick="navigate('login')">Logout</button>
+        </div>
+
+        <!-- Add Expense Screen -->
+        <div id="add-expense" class="screen">
+            <button class="back-button" onclick="goBack('dashboard')">←</button>
+            <h2 style="font-size: 20px; margin-top: 64px;">Add Expense</h2>
+            <label class="label">Amount</label>
+            <input class="input" placeholder="Enter amount">
+            <label class="label">Category</label>
+            <select class="input">
+                <option>Select category</option>
+                <option>Food</option>
+                <option>Books</option>
+                <option>Transportation</option>
+            </select>
+            <label class="label">Description</label>
+            <input class="input" placeholder="Enter description">
+            <button class="button" onclick="showConfirmation('dashboard')">Save</button>
+        </div>
+
+        <!-- View Expenses Screen -->
+        <div id="view-expenses" class="screen">
+            <button class="back-button" onclick="goBack('dashboard')">←</button>
+            <h2 style="font-size: 20px; margin-top: 64px;">Your Expenses</h2>
+            <div style="width: 100%;">
+                <div class="list-item">
+                    <div>
+                        <span>$5.00</span>
+                        <small>Food • 2023-05-01</small>
+                    </div>
+                    <div>
+                        <span style="margin-right: 8px; cursor: pointer;" onclick="navigate('edit-expense')">✎</span>
+                        <span style="cursor: pointer;" onclick="showConfirmation('view-expenses')">🗑</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Expense Screen -->
+        <div id="edit-expense" class="screen">
+            <button class="back-button" onclick="goBack('view-expenses')">←</button>
+            <h2 style="font-size: 20px; margin-top: 64px;">Edit Expense</h2>
+            <label class="label">Amount</label>
+            <input class="input" value="$5.00">
+            <label class="label">Category</label>
+            <select class="input">
+                <option>Food</option>
+                <option>Books</option>
+                <option>Transportation</option>
+            </select>
+            <label class="label">Description</label>
+            <input class="input" value="Lunch">
+            <button class="button" onclick="showConfirmation('view-expenses')">Update</button>
+        </div>
+
+        <!-- Spending Charts Screen -->
+        <div id="charts" class="screen">
+            <button class="back-button" onclick="goBack('dashboard')">←</button>
+            <h2 style="font-size: 20px; margin-top: 64px;">Spending Overview</h2>
+            <div class="chart-placeholder"></div>
+            <div class="filter-buttons">
+                <button class="button" onclick="setFilter(this)">Daily</button>
+                <button class="button active" onclick="setFilter(this)">Weekly</button>
+                <button class="button" onclick="setFilter(this)">Monthly</button>
+            </div>
+        </div>
+
+        <!-- Budget Screen -->
+        <div id="budget" class="screen">
+            <button class="back-button" onclick="goBack('dashboard')">←</button>
+            <h2 style="font-size: 20px; margin-top: 64px;">Manage Your Budgets</h2>
+            <div style="width: 100%;">
+                <div class="list-item">
+                    <span>Food</span>
+                    <input class="input" style="width: 100px;" value="$50">
+                    <div class="progress-bar"><div class="progress"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bank Transfer Screen -->
+        <div id="transfers" class="screen">
+            <button class="back-button" onclick="goBack('dashboard')">←</button>
+            <h2 style="font-size: 20px; margin-top: 64px;">Transfer Funds</h2>
+            <label class="label">Bank Account</label>
+            <select class="input">
+                <option>Select account</option>
+                <option>Bank A</option>
+                <option>Bank B</option>
+            </select>
+            <label class="label">Amount</label>
+            <input class="input" placeholder="Enter amount">
+            <button class="button" onclick="showConfirmation('dashboard')">Transfer</button>
+        </div>
+
+        <!-- Savings Screen -->
+        <div id="savings" class="screen">
+            <button class="back-button" onclick="goBack('dashboard')">←</button>
+            <h2 style="font-size: 20px; margin-top: 64px;">Your Savings</h2>
+            <h2 style="font-size: 28px;">$100.00</h2>
+            <label class="label">Add to Savings</label>
+            <input class="input" placeholder="Enter amount">
+            <p>Interest Earned: $0.50</p>
+            <button class="button" onclick="showConfirmation('dashboard')">Save</button>
+        </div>
+
+        <!-- Settings Screen -->
+        <div id="settings" class="screen">
+            <button class="back-button" onclick="goBack('dashboard')">←</button>
+            <h2 style="font-size: 20px; margin-top: 64px;">Settings</h2>
+            <div style="width: 100%;">
+                <div class="list-item">
+                    <span>Theme</span>
+                    <div class="toggle"></div>
+                </div>
+                <div class="list-item">
+                    <span>Notifications</span>
+                    <div class="toggle"></div>
+                </div>
+                <div class="list-item">
+                    <span>Account Details</span>
+                    <span>></span>
+                </div>
+            </div>
+            <button class="button" onclick="navigate('login')">Logout</button>
+        </div>
+
+        <!-- Error Pop-up -->
+        <div id="error-modal" class="modal">
+            <p id="error-message">Invalid input, please try again</p>
+            <button class="button" onclick="hideModal()">OK</button>
+        </div>
+
+        <!-- Confirmation Pop-up -->
+        <div id="confirmation-modal" class="modal">
+            <p id="confirmation-message">Action completed successfully</p>
+            <button class="button" onclick="hideModalAndNavigate()">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize localStorage with default user
+        if (!localStorage.getItem('users')) {
+            const defaultUsers = [
+                { email: 'nyakehkamanda5@gmail.com', password: 'Kamanda05Samantha' }
+            ];
+            localStorage.setItem('users', JSON.stringify(defaultUsers));
+        }
+
+        let nextScreen = '';
+
+        function navigate(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            // Clear input fields when navigating to login or register
+            if (screenId === 'login') {
+                document.getElementById('login-email').value = '';
+                document.getElementById('login-password').value = '';
+            } else if (screenId === 'register') {
+                document.getElementById('register-email').value = '';
+                document.getElementById('register-password').value = '';
+                document.getElementById('register-confirm-password').value = '';
+            }
+        }
+
+        function goBack(previousScreenId) {
+            navigate(previousScreenId);
+        }
+
+        function showConfirmation(next, message = 'Action completed successfully') {
+            nextScreen = next;
+            document.getElementById('confirmation-message').textContent = message;
+            document.getElementById('confirmation-modal').classList.add('active');
+        }
+
+        function showError(message = 'Invalid input, please try again') {
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('error-modal').classList.add('active');
+        }
+
+        function hideModal() {
+            document.querySelectorAll('.modal').forEach(modal => modal.classList.remove('active'));
+        }
+
+        function hideModalAndNavigate() {
+            hideModal();
+            navigate(nextScreen);
+        }
+
+        function setFilter(button) {
+            document.querySelectorAll('.filter-buttons .button').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            const isValidUser = users.some(user => user.email === email && user.password === password);
+            const isDefaultUser = email === 'nyakehkamanda5@gmail.com' && password === 'Kamanda05Samantha';
+
+            if (isValidUser || isDefaultUser) {
+                showConfirmation('dashboard', 'Login successful');
+            } else {
+                showError('Invalid email or password');
+            }
+        }
+
+        function handleRegister() {
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+
+            if (!email || !password || !confirmPassword) {
+                showError('All fields are required');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showError('Passwords do not match');
+                return;
+            }
+
+            if (users.some(user => user.email === email)) {
+                showError('Email already registered');
+                return;
+            }
+
+            users.push({ email, password });
+            localStorage.setItem('users', JSON.stringify(users));
+            showConfirmation('login', 'Registration successful. Please log in.');
+        }
+
+        // Mock form validation for other forms
+        document.querySelectorAll('.button').forEach(button => {
+            if (button.textContent === 'Save' || button.textContent === 'Update' || button.textContent === 'Transfer') {
+                button.addEventListener('click', () => {
+                    // Simulate validation
+                    if (Math.random() > 0.5) {
+                        showConfirmation(button.getAttribute('onclick').match(/'([^']+)'/)[1]);
+                    } else {
+                        showError();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
